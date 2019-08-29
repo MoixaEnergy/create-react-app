@@ -171,7 +171,7 @@ module.exports = function(webpackEnv) {
       isEnvDevelopment &&
         require.resolve('react-dev-utils/webpackHotDevClient'),
       // Finally, this is your app's code:
-      paths.appIndexJs,
+      paths.emittedIndex,
       // We include the app code last so that if there is a runtime error during
       // initialization, it doesn't blow up the WebpackDevServer client, and
       // changing JS code would still trigger a refresh.
@@ -325,7 +325,7 @@ module.exports = function(webpackEnv) {
         // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
         // please link the files into your node_modules/ and let module-resolution kick in.
         // Make sure your source files are compiled, as they will not be processed in any way.
-        new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+        new ModuleScopePlugin(paths.emitted, [paths.appPackageJson]),
       ],
     },
     resolveLoader: {
@@ -344,7 +344,7 @@ module.exports = function(webpackEnv) {
         // First, run the linter.
         // It's important to do this before Babel processes the JS.
         {
-          test: /\.(js|mjs|jsx|ts|tsx)$/,
+          test: /\.(js|mjs|jsx)$/,
           enforce: 'pre',
           use: [
             {
@@ -381,7 +381,7 @@ module.exports = function(webpackEnv) {
               loader: require.resolve('eslint-loader'),
             },
           ],
-          include: paths.appSrc,
+          include: paths.emittedSrc,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -404,7 +404,7 @@ module.exports = function(webpackEnv) {
             {
               // test: /\.(js|mjs|jsx|ts|tsx)$/,
               test: /\.(js|mjs|jsx)$/,
-              include: paths.appSrc,
+              include: paths.emittedSrc,
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
