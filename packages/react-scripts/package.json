@@ -1,10 +1,10 @@
 {
-  "name": "react-scripts",
+  "name": "@leemhenson-moixa/react-scripts",
   "version": "3.3.1",
-  "description": "Configuration and scripts for Create React App.",
+  "description": "Moixa configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/create-react-app.git",
+    "url": "https://github.com/MoixaEnergy/create-react-app.git",
     "directory": "packages/react-scripts"
   },
   "license": "MIT",
