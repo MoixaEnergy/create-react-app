@@ -73,6 +73,29 @@ const resolveModule = (resolveFn, filePath) => {
   return resolveFn(`${filePath}.js`);
 };
 
+const tsconfigPath = resolveApp('tsconfig.json');
+var scopeFragment = './';
+
+if (fs.existsSync(tsconfigPath)) {
+  const json = fs.readFileSync(tsconfigPath);
+  const tsconfig = JSON.parse(json);
+  const rootDir = (tsconfig.compilerOptions || {}).rootDir;
+  const nonLocalRootDir = (rootDir || '.') !== '.';
+
+  if (nonLocalRootDir) {
+    const resolvedRootDir = path.resolve(appDirectory, rootDir);
+    scopeFragment =
+      appDirectory
+        .replace(resolvedRootDir, '')
+        .replace(/^\//, '')
+        .replace(/\/$/, '') + '/';
+  }
+}
+
+const resolveEmitted = relativePath => {
+  return path.join(resolveApp('.emitted'), scopeFragment, relativePath);
+};
+
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
@@ -91,10 +114,10 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  emitted: resolveApp('.emitted'),
-  emittedIndex: resolveApp('.emitted/src/index.js'),
-  emittedNodeModules: resolveApp('.emitted/node_modules'),
-  emittedSrc: resolveApp('.emitted/src'),
+  emitted: resolveEmitted('.'),
+  emittedIndex: resolveEmitted('src/index.js'),
+  emittedNodeModules: resolveEmitted('node_modules'),
+  emittedSrc: resolveEmitted('src'),
 };
 
 // @remove-on-eject-begin
@@ -118,10 +141,10 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  emitted: resolveApp('.emitted'),
-  emittedIndex: resolveApp('.emitted/src/index.js'),
-  emittedNodeModules: resolveApp('.emitted/node_modules'),
-  emittedSrc: resolveApp('.emitted/src'),
+  emitted: resolveEmitted('.'),
+  emittedIndex: resolveEmitted('src/index.js'),
+  emittedNodeModules: resolveEmitted('node_modules'),
+  emittedSrc: resolveEmitted('src'),
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
@@ -158,10 +181,10 @@ if (
     appNodeModules: resolveOwn('node_modules'),
     publicUrl: getPublicUrl(resolveOwn('package.json')),
     servedPath: getServedPath(resolveOwn('package.json')),
-    emitted: resolveApp('.emitted'),
-    emittedIndex: resolveApp('.emitted/src/index.js'),
-    emittedNodeModules: resolveApp('.emitted/node_modules'),
-    emittedSrc: resolveApp('.emitted/src'),
+    emitted: resolveEmitted('.'),
+    emittedIndex: resolveEmitted('src/index.js'),
+    emittedNodeModules: resolveEmitted('node_modules'),
+    emittedSrc: resolveEmitted('src'),
     // These properties only exist before ejecting:
     ownPath: resolveOwn('.'),
     ownNodeModules: resolveOwn('node_modules'),
