@@ -34,10 +34,10 @@ const moduleFileExtensions = [
   'mjs',
   'web.js',
   'js',
-  'web.ts',
-  'ts',
-  'web.tsx',
-  'tsx',
+  // 'web.ts',
+  // 'ts',
+  // 'web.tsx',
+  // 'tsx',
   'json',
   'web.jsx',
   'jsx',
@@ -54,6 +54,29 @@ const resolveModule = (resolveFn, filePath) => {
   }
 
   return resolveFn(`${filePath}.js`);
+};
+
+const tsconfigPath = resolveApp('tsconfig.json');
+var scopeFragment = './';
+
+if (fs.existsSync(tsconfigPath)) {
+  const json = fs.readFileSync(tsconfigPath);
+  const tsconfig = JSON.parse(json);
+  const rootDir = (tsconfig.compilerOptions || {}).rootDir;
+  const nonLocalRootDir = (rootDir || '.') !== '.';
+
+  if (nonLocalRootDir) {
+    const resolvedRootDir = path.resolve(appDirectory, rootDir);
+    scopeFragment =
+      appDirectory
+        .replace(resolvedRootDir, '')
+        .replace(/^\//, '')
+        .replace(/\/$/, '') + '/';
+  }
+}
+
+const resolveEmitted = relativePath => {
+  return path.join(resolveApp('.emitted'), scopeFragment, relativePath);
 };
 
 // config after eject: we're in ./config/
@@ -73,6 +96,10 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
+  emitted: resolveEmitted('.'),
+  emittedIndex: resolveEmitted('src/index.js'),
+  emittedNodeModules: resolveEmitted('node_modules'),
+  emittedSrc: resolveEmitted('src'),
 };
 
 // @remove-on-eject-begin
@@ -95,6 +122,10 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
+  emitted: resolveEmitted('.'),
+  emittedIndex: resolveEmitted('src/index.js'),
+  emittedNodeModules: resolveEmitted('node_modules'),
+  emittedSrc: resolveEmitted('src'),
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
@@ -130,6 +161,10 @@ if (
     proxySetup: resolveOwn(`${templatePath}/src/setupProxy.js`),
     appNodeModules: resolveOwn('node_modules'),
     publicUrlOrPath,
+    emitted: resolveEmitted('.'),
+    emittedIndex: resolveEmitted('src/index.js'),
+    emittedNodeModules: resolveEmitted('node_modules'),
+    emittedSrc: resolveEmitted('src'),
     // These properties only exist before ejecting:
     ownPath: resolveOwn('.'),
     ownNodeModules: resolveOwn('node_modules'),
